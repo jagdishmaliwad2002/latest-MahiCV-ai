@@ -3,13 +3,18 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: CV Builder API specification
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: resumes
+    description: Resume CRUD operations
+  - name: ai
+    description: AI-powered content generation
+
 paths:
   /healthz:
     get:
@@ -24,6 +29,194 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /resumes:
+    get:
+      operationId: listResumes
+      tags: [resumes]
+      summary: List all resumes
+      responses:
+        "200":
+          description: List of resumes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Resume"
+    post:
+      operationId: createResume
+      tags: [resumes]
+      summary: Create a new resume
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResumeInput"
+      responses:
+        "201":
+          description: Created resume
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Resume"
+
+  /resumes/{id}:
+    get:
+      operationId: getResume
+      tags: [resumes]
+      summary: Get a resume by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Resume
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Resume"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+    patch:
+      operationId: updateResume
+      tags: [resumes]
+      summary: Update a resume
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResumeUpdate"
+      responses:
+        "200":
+          description: Updated resume
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Resume"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+    delete:
+      operationId: deleteResume
+      tags: [resumes]
+      summary: Delete a resume
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /resumes/{id}/duplicate:
+    post:
+      operationId: duplicateResume
+      tags: [resumes]
+      summary: Duplicate a resume
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "201":
+          description: Duplicated resume
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Resume"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /ai/generate-summary:
+    post:
+      operationId: generateSummary
+      tags: [ai]
+      summary: Generate a professional summary using AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GenerateSummaryRequest"
+      responses:
+        "200":
+          description: Generated summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeneratedTextResult"
+
+  /ai/improve-bullet:
+    post:
+      operationId: improveBullet
+      tags: [ai]
+      summary: Improve a bullet point using AI
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ImproveBulletRequest"
+      responses:
+        "200":
+          description: Improved bullet point
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GeneratedTextResult"
+
+  /ai/suggest-skills:
+    post:
+      operationId: suggestSkills
+      tags: [ai]
+      summary: Suggest skills based on job title and experience
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuggestSkillsRequest"
+      responses:
+        "200":
+          description: Suggested skills
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuggestedSkillsResult"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +227,226 @@ components:
       required:
         - status
 
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    ContactInfo:
+      type: object
+      properties:
+        email:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        location:
+          type: ["string", "null"]
+        linkedin:
+          type: ["string", "null"]
+        website:
+          type: ["string", "null"]
+
+    WorkExperience:
+      type: object
+      required: [id, company, title, startDate]
+      properties:
+        id:
+          type: string
+        company:
+          type: string
+        title:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: ["string", "null"]
+        current:
+          type: boolean
+        location:
+          type: ["string", "null"]
+        bullets:
+          type: array
+          items:
+            type: string
+
+    Education:
+      type: object
+      required: [id, institution, degree, startDate]
+      properties:
+        id:
+          type: string
+        institution:
+          type: string
+        degree:
+          type: string
+        field:
+          type: ["string", "null"]
+        startDate:
+          type: string
+        endDate:
+          type: ["string", "null"]
+        current:
+          type: boolean
+        gpa:
+          type: ["string", "null"]
+
+    Project:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: ["string", "null"]
+        url:
+          type: ["string", "null"]
+        technologies:
+          type: array
+          items:
+            type: string
+        bullets:
+          type: array
+          items:
+            type: string
+
+    Resume:
+      type: object
+      required: [id, title, createdAt, updatedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        template:
+          type: string
+        fullName:
+          type: ["string", "null"]
+        jobTitle:
+          type: ["string", "null"]
+        summary:
+          type: ["string", "null"]
+        contact:
+          $ref: "#/components/schemas/ContactInfo"
+        workExperience:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkExperience"
+        education:
+          type: array
+          items:
+            $ref: "#/components/schemas/Education"
+        skills:
+          type: array
+          items:
+            type: string
+        projects:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ResumeInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+        template:
+          type: string
+
+    ResumeUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+        template:
+          type: string
+        fullName:
+          type: string
+        jobTitle:
+          type: string
+        summary:
+          type: string
+        contact:
+          $ref: "#/components/schemas/ContactInfo"
+        workExperience:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkExperience"
+        education:
+          type: array
+          items:
+            $ref: "#/components/schemas/Education"
+        skills:
+          type: array
+          items:
+            type: string
+        projects:
+          type: array
+          items:
+            $ref: "#/components/schemas/Project"
+
+    GenerateSummaryRequest:
+      type: object
+      required: [fullName, jobTitle]
+      properties:
+        fullName:
+          type: string
+        jobTitle:
+          type: string
+        workExperience:
+          type: array
+          items:
+            $ref: "#/components/schemas/WorkExperience"
+        skills:
+          type: array
+          items:
+            type: string
+
+    ImproveBulletRequest:
+      type: object
+      required: [bullet, jobTitle]
+      properties:
+        bullet:
+          type: string
+        jobTitle:
+          type: string
+        company:
+          type: ["string", "null"]
+
+    SuggestSkillsRequest:
+      type: object
+      required: [jobTitle]
+      properties:
+        jobTitle:
+          type: string
+        existingSkills:
+          type: array
+          items:
+            type: string
+
+    GeneratedTextResult:
+      type: object
+      required: [text]
+      properties:
+        text:
+          type: string
+
+    SuggestedSkillsResult:
+      type: object
+      required: [skills]
+      properties:
+        skills:
+          type: array
+          items:
+            type: string
