@@ -31,7 +31,7 @@ export default function Sidebar({ activeSection, setActiveSection, collapsed, se
       <div className="h-14 flex items-center px-4 border-b border-slate-800 shrink-0">
         <Link href="/" className="flex items-center gap-2 text-white hover:opacity-80 transition-opacity">
           <FileText className="w-6 h-6 text-blue-400" />
-          {!collapsed && <span className="font-bold text-lg tracking-tight">ResumeAI</span>}
+          {!collapsed && <span className="font-bold text-lg tracking-tight">MahiCV-AI</span>}
         </Link>
       </div>
       

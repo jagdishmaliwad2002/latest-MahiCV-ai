@@ -33,7 +33,7 @@ export default function Landing() {
               <FileText className="w-4 h-4 text-white" />
             </div>
             <span className="text-white">
-              ResumeAI<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">.AI</span>
+              MahiCV-<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">AI</span>
             </span>
           </Link>
           <div className="hidden md:flex items-center gap-8 text-sm text-white/60">
@@ -70,7 +70,7 @@ export default function Landing() {
           </h1>
 
           <p className="text-lg text-white/50 max-w-2xl mx-auto mb-10">
-            ResumeAI is the smartest free CV builder on the planet. AI writes your summary, 7 premium templates, live preview, and a flawless PDF — all in your browser, completely free.
+            MahiCV-AI is the smartest free CV builder on the planet. AI writes your summary, 7 premium templates, live preview, and a flawless PDF — all in your browser, completely free.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5 mb-12">
@@ -99,7 +99,7 @@ export default function Landing() {
               ))}
             </div>
             <div className="text-sm text-white/50">
-              <span className="text-white font-semibold">50,000+</span> professionals trust ResumeAI
+              <span className="text-white font-semibold">50,000+</span> professionals trust MahiCV-AI
               <span className="ml-2 text-yellow-400">★★★★★</span>
             </div>
           </div>
@@ -374,7 +374,7 @@ export default function Landing() {
         <div className="rounded-2xl border border-white/5 bg-[#0f0f1a] p-10 md:p-16 grid md:grid-cols-2 gap-12 items-center">
           <div>
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs text-white/60 mb-6">
-              <UserCheck className="w-3 h-3" /> About ResumeAI
+              <UserCheck className="w-3 h-3" /> About MahiCV-AI
             </div>
             <h2 className="text-4xl font-extrabold mb-2">
               Built by a Developer
@@ -383,7 +383,7 @@ export default function Landing() {
               For Every Professional
             </h2>
             <p className="text-white/40 leading-relaxed mb-4">
-              ResumeAI was born from a simple frustration — great CV builders were either expensive, ugly, or required accounts. I built this to give every professional, fresh graduate, and career-changer a world-class resume tool that costs absolutely nothing.
+              MahiCV-AI was born from a simple frustration — great CV builders were either expensive, ugly, or required accounts. I built this to give every professional, fresh graduate, and career-changer a world-class resume tool that costs absolutely nothing.
             </p>
             <p className="text-white/40 leading-relaxed mb-8">
               Powered by the latest Groq LLaMA 3.3 AI, 7 hand-crafted templates, and privacy-first local storage — no data ever leaves your browser.
@@ -405,7 +405,7 @@ export default function Landing() {
               </div>
               <div className="font-bold text-white text-lg mb-1">Jagdish Maliwad</div>
               <div className="text-violet-400 text-sm font-medium mb-1">Developer</div>
-              <div className="text-white/30 text-xs mb-4">Full-Stack Developer · AI Enthusiast · ResumeAI</div>
+              <div className="text-white/30 text-xs mb-4">Full-Stack Developer · AI Enthusiast · MahiCV-AI</div>
               <div className="flex justify-center gap-1 mb-4">
                 {[...Array(5)].map((_, i) => <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />)}
                 <span className="text-white/30 text-xs ml-2 self-center">Trusted by 50K+</span>
@@ -466,10 +466,10 @@ export default function Landing() {
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
               <FileText className="w-3.5 h-3.5 text-white" />
             </div>
-            <span className="font-bold text-sm text-white/80">ResumeAI</span>
+            <span className="font-bold text-sm text-white/80">MahiCV-AI</span>
           </div>
           <p className="text-xs text-white/30">
-            © 2026 ResumeAI · Built by <span className="text-white/50 font-medium">Jagdish Maliwad</span> · All rights reserved
+            © 2026 MahiCV-AI · Built by <span className="text-white/50 font-medium">Jagdish Maliwad</span> · All rights reserved
           </p>
           <div className="flex gap-6 text-xs text-white/30">
             <Link href="/dashboard" className="hover:text-white/60 transition-colors">Builder</Link>
