@@ -5,8 +5,12 @@
  * CV Builder API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { Achievement } from './achievement';
+import type { Certification } from './certification';
 import type { ContactInfo } from './contactInfo';
+import type { CustomSection } from './customSection';
 import type { Education } from './education';
+import type { Language } from './language';
 import type { Project } from './project';
 import type { WorkExperience } from './workExperience';
 
@@ -16,9 +20,14 @@ export interface ResumeUpdate {
   fullName?: string;
   jobTitle?: string;
   summary?: string;
+  photoUrl?: string;
   contact?: ContactInfo;
   workExperience?: WorkExperience[];
   education?: Education[];
   skills?: string[];
   projects?: Project[];
+  certifications?: Certification[];
+  achievements?: Achievement[];
+  languages?: Language[];
+  customSections?: CustomSection[];
 }

@@ -6,17 +6,26 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './achievement';
 export * from './apiError';
+export * from './certification';
 export * from './contactInfo';
+export * from './customSection';
+export * from './customSectionItem';
 export * from './education';
 export * from './generatedTextResult';
 export * from './generateSummaryRequest';
 export * from './healthStatus';
 export * from './improveBulletRequest';
+export * from './language';
 export * from './project';
 export * from './resume';
 export * from './resumeInput';
+export * from './resumeScoreResult';
 export * from './resumeUpdate';
+export * from './scoreFeedbackItem';
+export * from './scoreResumeRequest';
+export * from './scoreResumeRequestResumeData';
 export * from './suggestedSkillsResult';
 export * from './suggestSkillsRequest';
 export * from './workExperience';

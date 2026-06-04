@@ -1,6 +1,4 @@
 import { pgTable, serial, text, timestamp, jsonb } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod/v4";
 
 export const resumesTable = pgTable("resumes", {
   id: serial("id").primaryKey(),
@@ -9,11 +7,16 @@ export const resumesTable = pgTable("resumes", {
   fullName: text("full_name"),
   jobTitle: text("job_title"),
   summary: text("summary"),
+  photoUrl: text("photo_url"),
   contact: jsonb("contact"),
   workExperience: jsonb("work_experience").$type<WorkExperienceEntry[]>(),
   education: jsonb("education").$type<EducationEntry[]>(),
   skills: jsonb("skills").$type<string[]>(),
   projects: jsonb("projects").$type<ProjectEntry[]>(),
+  certifications: jsonb("certifications").$type<CertificationEntry[]>(),
+  achievements: jsonb("achievements").$type<AchievementEntry[]>(),
+  languages: jsonb("languages").$type<LanguageEntry[]>(),
+  customSections: jsonb("custom_sections").$type<CustomSection[]>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -24,6 +27,7 @@ export interface ContactInfo {
   location?: string | null;
   linkedin?: string | null;
   website?: string | null;
+  github?: string | null;
 }
 
 export interface WorkExperienceEntry {
@@ -57,11 +61,39 @@ export interface ProjectEntry {
   bullets?: string[];
 }
 
-export const insertResumeSchema = createInsertSchema(resumesTable).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-});
+export interface CertificationEntry {
+  id: string;
+  name: string;
+  issuer?: string | null;
+  date?: string | null;
+  url?: string | null;
+}
 
-export type InsertResume = z.infer<typeof insertResumeSchema>;
+export interface AchievementEntry {
+  id: string;
+  title: string;
+  description?: string | null;
+}
+
+export interface LanguageEntry {
+  id: string;
+  name: string;
+  level: string;
+}
+
+export interface CustomSectionItem {
+  id: string;
+  title: string;
+  subtitle?: string | null;
+  date?: string | null;
+  description?: string | null;
+  bullets?: string[];
+}
+
+export interface CustomSection {
+  id: string;
+  heading: string;
+  items: CustomSectionItem[];
+}
+
 export type Resume = typeof resumesTable.$inferSelect;

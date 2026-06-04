@@ -27,7 +27,9 @@ import type {
   ImproveBulletRequest,
   Resume,
   ResumeInput,
+  ResumeScoreResult,
   ResumeUpdate,
+  ScoreResumeRequest,
   SuggestSkillsRequest,
   SuggestedSkillsResult
 } from './api.schemas';
@@ -53,7 +55,6 @@ export const getHealthCheckUrl = () => {
 }
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const healthCheck = async ( options?: RequestInit): Promise<HealthStatus> => {
@@ -770,5 +771,76 @@ export const useSuggestSkills = <TError = ErrorType<unknown>,
         TContext
       > => {
       return useMutation(getSuggestSkillsMutationOptions(options));
+    }
+
+export const getScoreResumeUrl = () => {
+
+
+
+
+  return `/api/ai/score-resume`
+}
+
+/**
+ * @summary Score a resume and provide improvement tips
+ */
+export const scoreResume = async (scoreResumeRequest: ScoreResumeRequest, options?: RequestInit): Promise<ResumeScoreResult> => {
+
+  return customFetch<ResumeScoreResult>(getScoreResumeUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      scoreResumeRequest,)
+  }
+);}
+
+
+
+
+export const getScoreResumeMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof scoreResume>>, TError,{data: BodyType<ScoreResumeRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof scoreResume>>, TError,{data: BodyType<ScoreResumeRequest>}, TContext> => {
+
+const mutationKey = ['scoreResume'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof scoreResume>>, {data: BodyType<ScoreResumeRequest>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  scoreResume(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ScoreResumeMutationResult = NonNullable<Awaited<ReturnType<typeof scoreResume>>>
+    export type ScoreResumeMutationBody = BodyType<ScoreResumeRequest>
+    export type ScoreResumeMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Score a resume and provide improvement tips
+ */
+export const useScoreResume = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof scoreResume>>, TError,{data: BodyType<ScoreResumeRequest>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof scoreResume>>,
+        TError,
+        {data: BodyType<ScoreResumeRequest>},
+        TContext
+      > => {
+      return useMutation(getScoreResumeMutationOptions(options));
     }
 

@@ -24,6 +24,8 @@ export interface ContactInfo {
   linkedin?: string | null;
   /** @nullable */
   website?: string | null;
+  /** @nullable */
+  github?: string | null;
 }
 
 export interface WorkExperience {
@@ -64,6 +66,48 @@ export interface Project {
   bullets?: string[];
 }
 
+export interface Certification {
+  id: string;
+  name: string;
+  /** @nullable */
+  issuer?: string | null;
+  /** @nullable */
+  date?: string | null;
+  /** @nullable */
+  url?: string | null;
+}
+
+export interface Achievement {
+  id: string;
+  title: string;
+  /** @nullable */
+  description?: string | null;
+}
+
+export interface Language {
+  id: string;
+  name: string;
+  level: string;
+}
+
+export interface CustomSectionItem {
+  id: string;
+  title: string;
+  /** @nullable */
+  subtitle?: string | null;
+  /** @nullable */
+  date?: string | null;
+  /** @nullable */
+  description?: string | null;
+  bullets?: string[];
+}
+
+export interface CustomSection {
+  id: string;
+  heading: string;
+  items?: CustomSectionItem[];
+}
+
 export interface Resume {
   id: number;
   title: string;
@@ -74,11 +118,17 @@ export interface Resume {
   jobTitle?: string | null;
   /** @nullable */
   summary?: string | null;
+  /** @nullable */
+  photoUrl?: string | null;
   contact?: ContactInfo;
   workExperience?: WorkExperience[];
   education?: Education[];
   skills?: string[];
   projects?: Project[];
+  certifications?: Certification[];
+  achievements?: Achievement[];
+  languages?: Language[];
+  customSections?: CustomSection[];
   createdAt: string;
   updatedAt: string;
 }
@@ -94,11 +144,16 @@ export interface ResumeUpdate {
   fullName?: string;
   jobTitle?: string;
   summary?: string;
+  photoUrl?: string;
   contact?: ContactInfo;
   workExperience?: WorkExperience[];
   education?: Education[];
   skills?: string[];
   projects?: Project[];
+  certifications?: Certification[];
+  achievements?: Achievement[];
+  languages?: Language[];
+  customSections?: CustomSection[];
 }
 
 export interface GenerateSummaryRequest {
@@ -118,6 +173,28 @@ export interface ImproveBulletRequest {
 export interface SuggestSkillsRequest {
   jobTitle: string;
   existingSkills?: string[];
+}
+
+export type ScoreResumeRequestResumeData = { [key: string]: unknown };
+
+export interface ScoreResumeRequest {
+  resumeData: ScoreResumeRequestResumeData;
+}
+
+export interface ScoreFeedbackItem {
+  category: string;
+  score: number;
+  maxScore: number;
+  feedback: string;
+  tips?: string[];
+}
+
+export interface ResumeScoreResult {
+  totalScore: number;
+  maxScore: number;
+  grade: string;
+  summary?: string;
+  breakdown: ScoreFeedbackItem[];
 }
 
 export interface GeneratedTextResult {

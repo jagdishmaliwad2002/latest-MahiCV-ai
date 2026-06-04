@@ -17,4 +17,6 @@ export interface ContactInfo {
   linkedin?: string | null;
   /** @nullable */
   website?: string | null;
+  /** @nullable */
+  github?: string | null;
 }

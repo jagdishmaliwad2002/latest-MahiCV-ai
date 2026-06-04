@@ -9,7 +9,6 @@ import * as zod from 'zod';
 
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({
@@ -27,12 +26,14 @@ export const ListResumesResponseItem = zod.object({
   "fullName": zod.string().nullish(),
   "jobTitle": zod.string().nullish(),
   "summary": zod.string().nullish(),
+  "photoUrl": zod.string().nullish(),
   "contact": zod.object({
   "email": zod.string().nullish(),
   "phone": zod.string().nullish(),
   "location": zod.string().nullish(),
   "linkedin": zod.string().nullish(),
-  "website": zod.string().nullish()
+  "website": zod.string().nullish(),
+  "github": zod.string().nullish()
 }).optional(),
   "workExperience": zod.array(zod.object({
   "id": zod.string(),
@@ -62,6 +63,35 @@ export const ListResumesResponseItem = zod.object({
   "url": zod.string().nullish(),
   "technologies": zod.array(zod.string()).optional(),
   "bullets": zod.array(zod.string()).optional()
+})).optional(),
+  "certifications": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "issuer": zod.string().nullish(),
+  "date": zod.string().nullish(),
+  "url": zod.string().nullish()
+})).optional(),
+  "achievements": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "description": zod.string().nullish()
+})).optional(),
+  "languages": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "level": zod.string()
+})).optional(),
+  "customSections": zod.array(zod.object({
+  "id": zod.string(),
+  "heading": zod.string(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "subtitle": zod.string().nullish(),
+  "date": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "bullets": zod.array(zod.string()).optional()
+})).optional()
 })).optional(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -92,12 +122,14 @@ export const GetResumeResponse = zod.object({
   "fullName": zod.string().nullish(),
   "jobTitle": zod.string().nullish(),
   "summary": zod.string().nullish(),
+  "photoUrl": zod.string().nullish(),
   "contact": zod.object({
   "email": zod.string().nullish(),
   "phone": zod.string().nullish(),
   "location": zod.string().nullish(),
   "linkedin": zod.string().nullish(),
-  "website": zod.string().nullish()
+  "website": zod.string().nullish(),
+  "github": zod.string().nullish()
 }).optional(),
   "workExperience": zod.array(zod.object({
   "id": zod.string(),
@@ -127,6 +159,35 @@ export const GetResumeResponse = zod.object({
   "url": zod.string().nullish(),
   "technologies": zod.array(zod.string()).optional(),
   "bullets": zod.array(zod.string()).optional()
+})).optional(),
+  "certifications": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "issuer": zod.string().nullish(),
+  "date": zod.string().nullish(),
+  "url": zod.string().nullish()
+})).optional(),
+  "achievements": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "description": zod.string().nullish()
+})).optional(),
+  "languages": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "level": zod.string()
+})).optional(),
+  "customSections": zod.array(zod.object({
+  "id": zod.string(),
+  "heading": zod.string(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "subtitle": zod.string().nullish(),
+  "date": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "bullets": zod.array(zod.string()).optional()
+})).optional()
 })).optional(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -146,12 +207,14 @@ export const UpdateResumeBody = zod.object({
   "fullName": zod.string().optional(),
   "jobTitle": zod.string().optional(),
   "summary": zod.string().optional(),
+  "photoUrl": zod.string().optional(),
   "contact": zod.object({
   "email": zod.string().nullish(),
   "phone": zod.string().nullish(),
   "location": zod.string().nullish(),
   "linkedin": zod.string().nullish(),
-  "website": zod.string().nullish()
+  "website": zod.string().nullish(),
+  "github": zod.string().nullish()
 }).optional(),
   "workExperience": zod.array(zod.object({
   "id": zod.string(),
@@ -181,6 +244,35 @@ export const UpdateResumeBody = zod.object({
   "url": zod.string().nullish(),
   "technologies": zod.array(zod.string()).optional(),
   "bullets": zod.array(zod.string()).optional()
+})).optional(),
+  "certifications": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "issuer": zod.string().nullish(),
+  "date": zod.string().nullish(),
+  "url": zod.string().nullish()
+})).optional(),
+  "achievements": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "description": zod.string().nullish()
+})).optional(),
+  "languages": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "level": zod.string()
+})).optional(),
+  "customSections": zod.array(zod.object({
+  "id": zod.string(),
+  "heading": zod.string(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "subtitle": zod.string().nullish(),
+  "date": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "bullets": zod.array(zod.string()).optional()
+})).optional()
 })).optional()
 })
 
@@ -191,12 +283,14 @@ export const UpdateResumeResponse = zod.object({
   "fullName": zod.string().nullish(),
   "jobTitle": zod.string().nullish(),
   "summary": zod.string().nullish(),
+  "photoUrl": zod.string().nullish(),
   "contact": zod.object({
   "email": zod.string().nullish(),
   "phone": zod.string().nullish(),
   "location": zod.string().nullish(),
   "linkedin": zod.string().nullish(),
-  "website": zod.string().nullish()
+  "website": zod.string().nullish(),
+  "github": zod.string().nullish()
 }).optional(),
   "workExperience": zod.array(zod.object({
   "id": zod.string(),
@@ -226,6 +320,35 @@ export const UpdateResumeResponse = zod.object({
   "url": zod.string().nullish(),
   "technologies": zod.array(zod.string()).optional(),
   "bullets": zod.array(zod.string()).optional()
+})).optional(),
+  "certifications": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "issuer": zod.string().nullish(),
+  "date": zod.string().nullish(),
+  "url": zod.string().nullish()
+})).optional(),
+  "achievements": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "description": zod.string().nullish()
+})).optional(),
+  "languages": zod.array(zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "level": zod.string()
+})).optional(),
+  "customSections": zod.array(zod.object({
+  "id": zod.string(),
+  "heading": zod.string(),
+  "items": zod.array(zod.object({
+  "id": zod.string(),
+  "title": zod.string(),
+  "subtitle": zod.string().nullish(),
+  "date": zod.string().nullish(),
+  "description": zod.string().nullish(),
+  "bullets": zod.array(zod.string()).optional()
+})).optional()
 })).optional(),
   "createdAt": zod.coerce.date(),
   "updatedAt": zod.coerce.date()
@@ -296,6 +419,30 @@ export const SuggestSkillsBody = zod.object({
 
 export const SuggestSkillsResponse = zod.object({
   "skills": zod.array(zod.string())
+})
+
+
+/**
+ * @summary Score a resume and provide improvement tips
+ */
+export const ScoreResumeBody = zod.object({
+  "resumeData": zod.object({
+
+}).passthrough()
+})
+
+export const ScoreResumeResponse = zod.object({
+  "totalScore": zod.number(),
+  "maxScore": zod.number(),
+  "grade": zod.string(),
+  "summary": zod.string().optional(),
+  "breakdown": zod.array(zod.object({
+  "category": zod.string(),
+  "score": zod.number(),
+  "maxScore": zod.number(),
+  "feedback": zod.string(),
+  "tips": zod.array(zod.string()).optional()
+}))
 })
 
 
