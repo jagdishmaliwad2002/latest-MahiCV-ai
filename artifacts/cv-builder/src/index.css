@@ -134,24 +134,82 @@
   }
 }
 
+/* ── RGB animated border button ── */
+@keyframes rgb-spin {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.rgb-btn {
+  position: relative;
+  z-index: 0;
+  border-radius: 14px;
+}
+
+.rgb-btn::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 16px;
+  background: linear-gradient(
+    90deg,
+    #ff0000, #ff7700, #ffff00, #00ff88,
+    #00cfff, #8b5cf6, #ec4899, #ff0000
+  );
+  background-size: 300% 300%;
+  animation: rgb-spin 3s linear infinite;
+  z-index: -1;
+}
+
+.rgb-btn::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border-radius: 12px;
+  background: #080810;
+  z-index: -1;
+}
+
+/* ── Print / Export PDF ── */
 @media print {
   body {
-    background: white;
+    background: white !important;
+    margin: 0;
+    padding: 0;
   }
   .no-print {
     display: none !important;
   }
-  .print-only {
-    display: block !important;
-  }
   .print-content {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 0;
     box-shadow: none !important;
     border: none !important;
+  }
+}
+
+/* ── Preview scale for mobile screens ── */
+.preview-scale-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 900px) {
+  .preview-scale-wrapper {
+    display: flex;
+    justify-content: center;
+  }
+  .preview-scale-inner {
+    transform-origin: top center;
+    transform: scale(0.55);
+    margin-bottom: -45%;
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1200px) {
+  .preview-scale-inner {
+    transform-origin: top center;
+    transform: scale(0.72);
+    margin-bottom: -28%;
   }
 }

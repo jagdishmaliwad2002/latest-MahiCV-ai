@@ -73,23 +73,18 @@ export default function Landing() {
             ResumeAI is the smartest free CV builder on the planet. AI writes your summary, 7 premium templates, live preview, and a flawless PDF — all in your browser, completely free.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5 mb-12">
             <button
               onClick={handleStartFree}
               disabled={createResume.isPending}
-              className="relative group px-8 py-3.5 rounded-xl font-semibold text-white text-sm overflow-hidden disabled:opacity-70"
+              className="rgb-btn px-8 py-3.5 font-semibold text-white text-sm disabled:opacity-60 flex items-center gap-2 hover:scale-105 transition-transform"
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-violet-600 to-fuchsia-600" />
-              <span className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-violet-500 to-fuchsia-500 transition-opacity" />
-              <span className="relative flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                Make My CV Free →
-              </span>
-              <span className="absolute bottom-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <Sparkles className="w-4 h-4" />
+              Make My CV Free →
             </button>
 
             <Link href="/dashboard">
-              <button className="px-8 py-3.5 rounded-xl font-semibold text-white/80 text-sm border border-white/10 bg-white/5 hover:bg-white/10 transition-all flex items-center gap-2">
+              <button className="px-8 py-3.5 rounded-xl font-semibold text-white/70 text-sm border border-white/15 bg-white/5 hover:bg-white/10 hover:text-white transition-all flex items-center gap-2">
                 ▶ Edit My CV
               </button>
             </Link>
@@ -438,23 +433,18 @@ export default function Landing() {
           <p className="text-white/40 mb-10">
             No signup. No credit card. No limits. Just an incredible CV<br />in minutes.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5 mb-8">
             <button
               onClick={handleStartFree}
               disabled={createResume.isPending}
-              className="relative group px-8 py-3.5 rounded-xl font-semibold text-white text-sm overflow-hidden disabled:opacity-70"
+              className="rgb-btn px-8 py-3.5 font-semibold text-white text-sm disabled:opacity-60 flex items-center gap-2 hover:scale-105 transition-transform"
             >
-              <span className="absolute inset-0 bg-gradient-to-r from-violet-600 to-fuchsia-600" />
-              <span className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-violet-500 to-fuchsia-500 transition-opacity" />
-              <span className="relative flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                Build My Free CV Now →
-              </span>
-              <span className="absolute bottom-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <Sparkles className="w-4 h-4" />
+              Build My Free CV Now →
             </button>
 
             <Link href="/dashboard">
-              <button className="px-8 py-3.5 rounded-xl font-semibold text-white/80 text-sm border border-white/10 bg-white/5 hover:bg-white/10 transition-all flex items-center gap-2">
+              <button className="px-8 py-3.5 rounded-xl font-semibold text-white/70 text-sm border border-white/15 bg-white/5 hover:bg-white/10 hover:text-white transition-all flex items-center gap-2">
                 <RotateCcw className="w-4 h-4" /> Edit Existing CV
               </button>
             </Link>

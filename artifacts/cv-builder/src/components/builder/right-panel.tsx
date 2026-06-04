@@ -1,14 +1,12 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, LayoutTemplate, Palette, History, Award, CheckCircle2, Star, SaveAll, Loader2, RotateCcw } from "lucide-react";
+import { Download, LayoutTemplate, Palette, History, CheckCircle2, Star, Loader2, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Progress } from "@/components/ui/progress";
 import PreviewPanel from "@/components/builder/preview-panel";
 import { useScoreResume } from "@workspace/api-client-react";
 import { useState } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 interface RightPanelProps {
@@ -28,21 +26,17 @@ interface RightPanelProps {
 }
 
 export default function RightPanel({ activeTab, setActiveTab, data, onChange, hiddenSections, setHiddenSections, accentColor, setAccentColor, fontFamily, setFontFamily, history, restoreHistory, handlePrint }: RightPanelProps) {
-  
   const scoreResume = useScoreResume();
   const [scoreData, setScoreData] = useState<any>(null);
 
-  const toggleSectionVisibility = (sectionKey: string) => {
+  const toggleSection = (key: string) => {
     const next = new Set(hiddenSections);
-    if (next.has(sectionKey)) next.delete(sectionKey);
-    else next.add(sectionKey);
+    next.has(key) ? next.delete(key) : next.add(key);
     setHiddenSections(next);
   };
 
   const handleScore = () => {
-    scoreResume.mutate({ data: { resumeData: data } }, {
-      onSuccess: (res) => setScoreData(res)
-    });
+    scoreResume.mutate({ data: { resumeData: data } }, { onSuccess: (res) => setScoreData(res) });
   };
 
   const sectionsList = [
@@ -72,107 +66,121 @@ export default function RightPanel({ activeTab, setActiveTab, data, onChange, hi
   ];
 
   const templates = [
-    { id: "classic", name: "Classic" },
-    { id: "modern", name: "Modern" },
-    { id: "minimal", name: "Minimal" }
+    { id: "classic", name: "Classic", desc: "Finance & Law" },
+    { id: "modern", name: "Modern", desc: "Tech & Startups" },
+    { id: "minimal", name: "Minimal", desc: "Design & Creative" },
   ];
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
-      <div className="h-14 border-b flex items-center justify-between px-4 shrink-0 bg-background/50 backdrop-blur z-10 no-print">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
-          <TabsList className="h-full bg-transparent p-0 gap-4">
-            <TabsTrigger value="preview" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none shadow-none h-full px-2">Preview</TabsTrigger>
-            <TabsTrigger value="templates" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none shadow-none h-full px-2">Templates</TabsTrigger>
-            <TabsTrigger value="sections" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none shadow-none h-full px-2">Sections</TabsTrigger>
-            <TabsTrigger value="style" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none shadow-none h-full px-2">Style</TabsTrigger>
-            <TabsTrigger value="score" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none shadow-none h-full px-2">Score</TabsTrigger>
-            <TabsTrigger value="history" className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none shadow-none h-full px-2">History</TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <Button onClick={handlePrint} size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
-          <Download className="w-4 h-4 mr-2" /> Export PDF
-        </Button>
+      {/* Tab bar */}
+      <div className="border-b shrink-0 bg-background/50 backdrop-blur z-10 no-print">
+        <div className="flex items-center justify-between px-2 sm:px-4 h-14">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full overflow-x-auto">
+            <TabsList className="h-full bg-transparent p-0 gap-1 sm:gap-3 flex flex-nowrap">
+              {[
+                { value: "preview", label: "Preview" },
+                { value: "templates", label: "Templates" },
+                { value: "sections", label: "Sections" },
+                { value: "style", label: "Style" },
+                { value: "score", label: "Score" },
+                { value: "history", label: "History" },
+              ].map(tab => (
+                <TabsTrigger
+                  key={tab.value}
+                  value={tab.value}
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none shadow-none h-full px-2 sm:px-3 text-xs sm:text-sm whitespace-nowrap"
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+          <button
+            onClick={handlePrint}
+            className="ml-2 shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-colors"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Export</span> PDF
+          </button>
+        </div>
       </div>
 
+      {/* Content */}
       <div className="flex-1 overflow-y-auto print:overflow-visible">
-        {/* PREVIEW TAB */}
-        <div className={`min-h-full p-4 md:p-8 flex justify-center items-start print:p-0 ${activeTab === 'preview' ? 'block' : 'hidden print:block'}`}>
-          <PreviewPanel data={data} hiddenSections={hiddenSections} accentColor={accentColor} fontFamily={fontFamily} />
+
+        {/* PREVIEW */}
+        <div className={`min-h-full print:p-0 ${activeTab === "preview" ? "block" : "hidden print:block"}`}>
+          <div className="preview-scale-wrapper p-4 md:p-8 flex justify-center items-start">
+            <div className="preview-scale-inner">
+              <PreviewPanel data={data} hiddenSections={hiddenSections} accentColor={accentColor} fontFamily={fontFamily} />
+            </div>
+          </div>
         </div>
 
-        {/* TEMPLATES TAB */}
+        {/* TEMPLATES */}
         {activeTab === "templates" && (
-          <div className="p-6 max-w-4xl mx-auto space-y-6">
-            <h3 className="text-lg font-semibold">Choose Template</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="p-4 sm:p-6 space-y-4">
+            <h3 className="text-base font-semibold">Choose Template</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {templates.map(t => (
-                <div 
-                  key={t.id} 
-                  className={`border-2 rounded-xl p-2 cursor-pointer transition-all hover:border-primary/50 ${data.template === t.id ? 'border-primary shadow-md bg-primary/5' : 'border-transparent bg-background shadow-sm'}`}
+                <button
+                  key={t.id}
+                  className={`border-2 rounded-xl p-3 cursor-pointer transition-all hover:border-primary/50 text-left ${data.template === t.id ? "border-primary bg-primary/5 shadow-sm" : "border-muted bg-background"}`}
                   onClick={() => onChange({ template: t.id })}
                 >
-                  <div className="aspect-[1/1.4] bg-muted rounded-md mb-3 flex items-center justify-center relative overflow-hidden">
-                    {/* Placeholder abstract representations of templates */}
-                    {t.id === "classic" && <div className="w-3/4 h-3/4 flex flex-col gap-2 opacity-50"><div className="w-full h-4 bg-slate-400 mx-auto rounded-sm mb-2" /><div className="w-full h-2 bg-slate-300 rounded-sm" /><div className="w-full h-2 bg-slate-300 rounded-sm" /></div>}
-                    {t.id === "modern" && <div className="w-full h-full flex flex-col opacity-50"><div className="w-full h-1/4 bg-blue-400 mb-2" /><div className="flex-1 px-4"><div className="w-full h-2 bg-slate-400 rounded-sm mb-2" /><div className="w-1/2 h-2 bg-slate-300 rounded-sm" /></div></div>}
+                  <div className="aspect-[1/1.3] bg-muted rounded-md mb-3 flex items-center justify-center relative overflow-hidden">
+                    {t.id === "classic" && <div className="w-3/4 h-3/4 flex flex-col gap-2 opacity-50"><div className="w-full h-4 bg-slate-400 rounded-sm mb-2" /><div className="w-full h-2 bg-slate-300 rounded-sm" /><div className="w-full h-2 bg-slate-300 rounded-sm" /></div>}
+                    {t.id === "modern" && <div className="w-full h-full flex flex-col opacity-50"><div className="w-full h-1/4 rounded-sm mb-2" style={{ backgroundColor: accentColor }} /><div className="flex-1 px-4"><div className="w-full h-2 bg-slate-400 rounded-sm mb-2" /><div className="w-1/2 h-2 bg-slate-300 rounded-sm" /></div></div>}
                     {t.id === "minimal" && <div className="w-3/4 h-3/4 flex flex-col gap-4 opacity-50 items-start pt-4"><div className="w-1/2 h-3 bg-slate-400 rounded-sm" /><div className="w-3/4 h-2 bg-slate-300 rounded-sm" /></div>}
-                    
                     {data.template === t.id && (
-                      <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-1 shadow-sm">
+                      <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-0.5 shadow-sm">
                         <CheckCircle2 className="w-4 h-4" />
                       </div>
                     )}
                   </div>
-                  <p className="text-center font-medium">{t.name}</p>
-                </div>
+                  <p className="font-semibold text-sm">{t.name}</p>
+                  <p className="text-xs text-muted-foreground">{t.desc}</p>
+                </button>
               ))}
             </div>
           </div>
         )}
 
-        {/* SECTIONS TAB */}
+        {/* SECTIONS */}
         {activeTab === "sections" && (
-          <div className="p-6 max-w-2xl mx-auto space-y-6">
-            <h3 className="text-lg font-semibold">Visibility Configuration</h3>
-            <p className="text-sm text-muted-foreground mb-6">Toggle sections to show or hide them in the preview and exported PDF.</p>
-            
+          <div className="p-4 sm:p-6 space-y-4 max-w-lg">
+            <div>
+              <h3 className="text-base font-semibold">Section Visibility</h3>
+              <p className="text-sm text-muted-foreground mt-1">Toggle sections to show or hide them in the preview and PDF.</p>
+            </div>
             <div className="bg-background border rounded-xl divide-y">
               {sectionsList.map(sec => (
-                <div key={sec.key} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
-                  <Label htmlFor={`hide-${sec.key}`} className="text-base cursor-pointer flex-1">{sec.label}</Label>
-                  <Switch 
-                    id={`hide-${sec.key}`} 
-                    checked={!hiddenSections.has(sec.key)} 
-                    onCheckedChange={() => toggleSectionVisibility(sec.key)} 
-                  />
+                <div key={sec.key} className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
+                  <Label htmlFor={`hide-${sec.key}`} className="cursor-pointer flex-1 text-sm">{sec.label}</Label>
+                  <Switch id={`hide-${sec.key}`} checked={!hiddenSections.has(sec.key)} onCheckedChange={() => toggleSection(sec.key)} />
                 </div>
               ))}
-              
               {data.customSections?.map((cSec: any) => (
-                <div key={cSec.id} className="flex items-center justify-between p-4 hover:bg-muted/50 transition-colors">
-                  <Label htmlFor={`hide-custom-${cSec.id}`} className="text-base cursor-pointer flex-1">{cSec.heading || "Custom Section"}</Label>
-                  <Switch 
-                    id={`hide-custom-${cSec.id}`} 
-                    checked={!hiddenSections.has(`custom-${cSec.id}`)} 
-                    onCheckedChange={() => toggleSectionVisibility(`custom-${cSec.id}`)} 
-                  />
+                <div key={cSec.id} className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors">
+                  <Label htmlFor={`hide-custom-${cSec.id}`} className="cursor-pointer flex-1 text-sm">{cSec.heading || "Custom Section"}</Label>
+                  <Switch id={`hide-custom-${cSec.id}`} checked={!hiddenSections.has(`custom-${cSec.id}`)} onCheckedChange={() => toggleSection(`custom-${cSec.id}`)} />
                 </div>
               ))}
             </div>
           </div>
         )}
 
-        {/* STYLE TAB */}
+        {/* STYLE */}
         {activeTab === "style" && (
-          <div className="p-6 max-w-2xl mx-auto space-y-8">
+          <div className="p-4 sm:p-6 space-y-8 max-w-lg">
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Accent Color</h3>
+              <h3 className="text-base font-semibold">Accent Color</h3>
               <div className="flex flex-wrap gap-4">
                 {colors.map(c => (
                   <button
                     key={c.value}
-                    className={`w-12 h-12 rounded-full flex items-center justify-center shadow-sm transition-transform hover:scale-110 ${accentColor === c.value ? 'ring-2 ring-offset-2 ring-foreground scale-110' : ''}`}
+                    className={`w-11 h-11 rounded-full flex items-center justify-center shadow-sm transition-transform hover:scale-110 ${accentColor === c.value ? "ring-2 ring-offset-2 ring-foreground scale-110" : ""}`}
                     style={{ backgroundColor: c.value }}
                     onClick={() => setAccentColor(c.value)}
                     title={c.name}
@@ -182,13 +190,10 @@ export default function RightPanel({ activeTab, setActiveTab, data, onChange, hi
                 ))}
               </div>
             </div>
-
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Typography</h3>
+            <div className="space-y-3">
+              <h3 className="text-base font-semibold">Font Family</h3>
               <Select value={fontFamily} onValueChange={setFontFamily}>
-                <SelectTrigger className="w-full md:w-[300px]">
-                  <SelectValue placeholder="Select a font" />
-                </SelectTrigger>
+                <SelectTrigger className="w-full sm:w-[280px]"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {fonts.map(f => (
                     <SelectItem key={f.value} value={f.value}>
@@ -201,64 +206,60 @@ export default function RightPanel({ activeTab, setActiveTab, data, onChange, hi
           </div>
         )}
 
-        {/* SCORE TAB */}
+        {/* SCORE */}
         {activeTab === "score" && (
-          <div className="p-6 max-w-3xl mx-auto space-y-8">
-            <div className="flex flex-col items-center justify-center text-center space-y-4 mb-8">
-              <h2 className="text-2xl font-bold">Resume Score</h2>
-              <p className="text-muted-foreground max-w-md">Get instant AI feedback on your resume content, formatting, and impact.</p>
-              <Button onClick={handleScore} disabled={scoreResume.isPending} className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0" size="lg">
-                {scoreResume.isPending ? <Loader2 className="w-5 h-5 mr-2 animate-spin"/> : <Star className="w-5 h-5 mr-2" />}
+          <div className="p-4 sm:p-6 max-w-2xl mx-auto space-y-6">
+            <div className="text-center space-y-3">
+              <h2 className="text-xl font-bold">AI Resume Score</h2>
+              <p className="text-sm text-muted-foreground">Get instant AI feedback on your resume's content, formatting, and impact.</p>
+              <Button onClick={handleScore} disabled={scoreResume.isPending} className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0">
+                {scoreResume.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Star className="w-4 h-4 mr-2" />}
                 {scoreData ? "Rescore Resume" : "Score My Resume"}
               </Button>
             </div>
 
             {scoreData && (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="bg-card border rounded-2xl p-6 shadow-sm mb-6 flex flex-col md:flex-row items-center gap-8">
-                  <div className="relative w-32 h-32 flex items-center justify-center shrink-0">
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-5">
+                <div className="bg-card border rounded-2xl p-5 shadow-sm flex flex-col sm:flex-row items-center gap-6">
+                  <div className="relative w-28 h-28 flex items-center justify-center shrink-0">
                     <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                      <circle className="text-muted stroke-current" strokeWidth="8" cx="50" cy="50" r="40" fill="transparent"></circle>
-                      <circle 
-                        className={`${scoreData.overallScore >= 80 ? 'text-green-500' : scoreData.overallScore >= 60 ? 'text-yellow-500' : 'text-red-500'} stroke-current transition-all duration-1000 ease-in-out`} 
-                        strokeWidth="8" 
-                        strokeLinecap="round" 
-                        cx="50" cy="50" r="40" fill="transparent" 
+                      <circle className="text-muted stroke-current" strokeWidth="8" cx="50" cy="50" r="40" fill="transparent" />
+                      <circle
+                        className={`${scoreData.overallScore >= 80 ? "text-green-500" : scoreData.overallScore >= 60 ? "text-yellow-500" : "text-red-500"} stroke-current transition-all duration-1000`}
+                        strokeWidth="8" strokeLinecap="round" cx="50" cy="50" r="40" fill="transparent"
                         strokeDasharray={`${(scoreData.overallScore / 100) * 251.2} 251.2`}
-                      ></circle>
+                      />
                     </svg>
-                    <div className="absolute flex flex-col items-center justify-center">
+                    <div className="absolute flex flex-col items-center">
                       <span className="text-3xl font-black">{scoreData.overallScore}</span>
                       <span className="text-xs text-muted-foreground">/ 100</span>
                     </div>
                   </div>
-                  <div className="flex-1 space-y-2 text-center md:text-left">
-                    <div className="flex items-center justify-center md:justify-start gap-3">
-                      <h3 className="text-2xl font-bold">Grade: {scoreData.letterGrade}</h3>
-                    </div>
-                    <p className="text-muted-foreground leading-relaxed">{scoreData.summaryText}</p>
+                  <div className="flex-1 text-center sm:text-left">
+                    <h3 className="text-xl font-bold mb-1">Grade: {scoreData.letterGrade}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{scoreData.summaryText}</p>
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <h4 className="font-semibold text-lg">Category Breakdown</h4>
-                  <Accordion type="single" collapsible className="w-full space-y-3">
+                <div className="space-y-3">
+                  <h4 className="font-semibold">Category Breakdown</h4>
+                  <Accordion type="single" collapsible className="w-full space-y-2">
                     {scoreData.categories?.map((cat: any, i: number) => (
-                      <AccordionItem key={i} value={`cat-${i}`} className="bg-card border rounded-xl px-4 py-1 data-[state=open]:shadow-sm">
-                        <AccordionTrigger className="hover:no-underline flex flex-col items-stretch space-y-3 pb-3">
-                          <div className="flex justify-between items-center w-full">
-                            <span className="font-semibold">{cat.name}</span>
-                            <span className="font-medium">{cat.score}/{cat.maxScore}</span>
-                          </div>
-                          <div className="w-full bg-muted rounded-full h-2 overflow-hidden flex-1 relative">
-                            <div className="bg-primary h-full absolute left-0 top-0 transition-all duration-500" style={{ width: `${(cat.score / cat.maxScore) * 100}%` }} />
+                      <AccordionItem key={i} value={`cat-${i}`} className="bg-card border rounded-xl px-4 py-1">
+                        <AccordionTrigger className="hover:no-underline">
+                          <div className="flex flex-col w-full gap-2 pr-2">
+                            <div className="flex justify-between items-center w-full text-sm">
+                              <span className="font-semibold text-left">{cat.name}</span>
+                              <span className="font-medium shrink-0 ml-2">{cat.score}/{cat.maxScore}</span>
+                            </div>
+                            <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">
+                              <div className="bg-primary h-full transition-all duration-500" style={{ width: `${(cat.score / cat.maxScore) * 100}%` }} />
+                            </div>
                           </div>
                         </AccordionTrigger>
-                        <AccordionContent className="pt-2 text-muted-foreground space-y-2 pl-2">
-                          <ul className="list-disc list-inside space-y-1">
-                            {cat.tips?.map((tip: string, j: number) => (
-                              <li key={j}>{tip}</li>
-                            ))}
+                        <AccordionContent className="pt-2 text-muted-foreground">
+                          <ul className="list-disc list-inside space-y-1 text-sm">
+                            {cat.tips?.map((tip: string, j: number) => <li key={j}>{tip}</li>)}
                           </ul>
                         </AccordionContent>
                       </AccordionItem>
@@ -270,34 +271,27 @@ export default function RightPanel({ activeTab, setActiveTab, data, onChange, hi
           </div>
         )}
 
-        {/* HISTORY TAB */}
+        {/* HISTORY */}
         {activeTab === "history" && (
-          <div className="p-6 max-w-2xl mx-auto space-y-6">
-            <div className="flex items-center gap-2 mb-6">
-              <History className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold">Local Save History</h3>
-            </div>
-            
+          <div className="p-4 sm:p-6 max-w-lg mx-auto space-y-4">
+            <h3 className="text-base font-semibold">Save History</h3>
             {history.length === 0 ? (
-              <div className="text-center p-12 bg-muted/30 border rounded-xl border-dashed">
-                <p className="text-muted-foreground">No history yet. Changes are auto-saved locally.</p>
+              <div className="text-center p-10 border rounded-xl border-dashed">
+                <p className="text-sm text-muted-foreground">No snapshots yet — changes are auto-saved after 1.5 s.</p>
               </div>
             ) : (
-              <div className="space-y-3">
-                {history.map((snapshot, idx) => {
-                  const date = new Date(snapshot.timestamp);
-                  return (
-                    <div key={idx} className="flex items-center justify-between p-4 bg-card border rounded-xl shadow-sm hover:shadow-md transition-shadow">
-                      <div>
-                        <p className="font-medium text-sm">Autosave</p>
-                        <p className="text-xs text-muted-foreground">{date.toLocaleString()}</p>
-                      </div>
-                      <Button variant="secondary" size="sm" onClick={() => restoreHistory(snapshot.data)}>
-                        <RotateCcw className="w-4 h-4 mr-2" /> Restore
-                      </Button>
+              <div className="space-y-2">
+                {history.map((snap, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-4 bg-card border rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                    <div>
+                      <p className="font-medium text-sm">Autosave #{history.length - idx}</p>
+                      <p className="text-xs text-muted-foreground">{new Date(snap.timestamp).toLocaleString()}</p>
                     </div>
-                  );
-                })}
+                    <Button variant="secondary" size="sm" onClick={() => restoreHistory(snap.data)}>
+                      <RotateCcw className="w-3.5 h-3.5 mr-1.5" /> Restore
+                    </Button>
+                  </div>
+                ))}
               </div>
             )}
           </div>
