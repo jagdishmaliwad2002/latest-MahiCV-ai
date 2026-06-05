@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Download, CheckCircle2, Star, Loader2, RotateCcw } from "lucide-react";
+import { Download, CheckCircle2, Star, Loader2, RotateCcw, Palette } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -9,7 +9,7 @@ import PreviewPanel from "@/components/builder/preview-panel";
 import { useScoreResume } from "@workspace/api-client-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
-const A4_WIDTH = 816; // 8.5in × 96dpi
+const A4_WIDTH = 816;
 
 interface RightPanelProps {
   activeTab: string;
@@ -27,7 +27,6 @@ interface RightPanelProps {
   handlePrint: () => void;
 }
 
-/** Measures its container and scales the A4 sheet to fill it */
 function ScaledPreview({ data, hiddenSections, accentColor, fontFamily }: { data: any; hiddenSections: Set<string>; accentColor: string; fontFamily: string }) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(0.7);
@@ -38,9 +37,8 @@ function ScaledPreview({ data, hiddenSections, accentColor, fontFamily }: { data
     const obs = new ResizeObserver(entries => {
       const w = entries[0].contentRect.width;
       const h = entries[0].contentRect.height;
-      // Fit width first, then cap by height if needed
       const byW = (w - 32) / A4_WIDTH;
-      const byH = (h - 32) / 1056; // 11in × 96dpi
+      const byH = (h - 32) / 1056;
       setScale(Math.min(1, byW, byH > 0.1 ? byH : byW));
     });
     obs.observe(el);
@@ -50,11 +48,7 @@ function ScaledPreview({ data, hiddenSections, accentColor, fontFamily }: { data
   const scaledH = Math.round(1056 * scale);
 
   return (
-    <div
-      ref={wrapperRef}
-      className="flex-1 overflow-auto flex flex-col items-center justify-start p-4 bg-muted/20"
-    >
-      {/* container sized to the scaled page so scroll works naturally */}
+    <div ref={wrapperRef} className="flex-1 overflow-auto flex flex-col items-center justify-start p-4 bg-muted/20">
       <div style={{ width: A4_WIDTH * scale, height: scaledH, flexShrink: 0, position: "relative" }}>
         <div style={{ transformOrigin: "top left", transform: `scale(${scale})`, width: A4_WIDTH, position: "absolute", top: 0, left: 0 }}>
           <PreviewPanel data={data} hiddenSections={hiddenSections} accentColor={accentColor} fontFamily={fontFamily} />
@@ -73,6 +67,7 @@ export default function RightPanel({
 }: RightPanelProps) {
   const scoreResume = useScoreResume();
   const [scoreData, setScoreData] = useState<any>(null);
+  const [customColor, setCustomColor] = useState(accentColor);
 
   const toggleSection = (key: string) => {
     const next = new Set(hiddenSections);
@@ -81,44 +76,61 @@ export default function RightPanel({
   };
 
   const sectionsList = [
-    { key: "summary", label: "Professional Summary" },
-    { key: "experience", label: "Work Experience" },
-    { key: "education", label: "Education" },
-    { key: "skills", label: "Skills" },
-    { key: "projects", label: "Projects" },
+    { key: "summary",        label: "Professional Summary" },
+    { key: "experience",     label: "Work Experience" },
+    { key: "education",      label: "Education" },
+    { key: "skills",         label: "Skills" },
+    { key: "projects",       label: "Projects" },
     { key: "certifications", label: "Certifications" },
-    { key: "achievements", label: "Achievements" },
-    { key: "languages", label: "Languages" },
+    { key: "achievements",   label: "Achievements" },
+    { key: "languages",      label: "Languages" },
   ];
 
+  /* ── Color palette — 18 presets ── */
   const colors = [
-    { name: "Blue", value: "#3b82f6" },
-    { name: "Teal", value: "#14b8a6" },
-    { name: "Violet", value: "#8b5cf6" },
-    { name: "Rose", value: "#f43f5e" },
-    { name: "Orange", value: "#f97316" },
-    { name: "Slate", value: "#475569" },
+    { name: "Indigo",      value: "#3b82f6" },
+    { name: "Teal",        value: "#14b8a6" },
+    { name: "Violet",      value: "#8b5cf6" },
+    { name: "Rose",        value: "#f43f5e" },
+    { name: "Orange",      value: "#f97316" },
+    { name: "Slate",       value: "#475569" },
+    { name: "Emerald",     value: "#10b981" },
+    { name: "Amber",       value: "#f59e0b" },
+    { name: "Cyan",        value: "#06b6d4" },
+    { name: "Fuchsia",     value: "#d946ef" },
+    { name: "Red",         value: "#ef4444" },
+    { name: "Sky",         value: "#0ea5e9" },
+    { name: "Lime",        value: "#84cc16" },
+    { name: "Pink",        value: "#ec4899" },
+    { name: "Warm Gray",   value: "#78716c" },
+    { name: "Navy",        value: "#1e3a8a" },
+    { name: "Forest",      value: "#15803d" },
+    { name: "Black",       value: "#111111" },
   ];
 
   const fonts = [
-    { name: "Inter (Sans)", value: "Inter, sans-serif" },
-    { name: "Georgia (Serif)", value: "Georgia, serif" },
-    { name: "Courier (Mono)", value: "Courier New, monospace" },
+    { name: "Inter (Sans)",       value: "Inter, sans-serif" },
+    { name: "Georgia (Serif)",    value: "Georgia, serif" },
+    { name: "Courier (Mono)",     value: "Courier New, monospace" },
+    { name: "Times New Roman",    value: "'Times New Roman', serif" },
+    { name: "Arial",              value: "Arial, sans-serif" },
+    { name: "Garamond",           value: "Garamond, serif" },
   ];
 
   const templates = [
-    { id: "classic", name: "Classic", desc: "Finance & Law" },
-    { id: "modern", name: "Modern", desc: "Tech & Startups" },
-    { id: "minimal", name: "Minimal", desc: "Design & Creative" },
+    { id: "classic",   name: "Classic",   desc: "Finance & Law" },
+    { id: "modern",    name: "Modern",    desc: "Tech & Startups" },
+    { id: "minimal",   name: "Minimal",   desc: "Design & Creative" },
+    { id: "executive", name: "Executive", desc: "DevOps & Enterprise" },
   ];
 
   const TABS = [
-    { value: "preview", label: "Preview" },
+    { value: "preview",   label: "Preview" },
     { value: "templates", label: "Templates" },
-    { value: "sections", label: "Sections" },
-    { value: "style", label: "Style" },
-    { value: "score", label: "Score" },
-    { value: "history", label: "History" },
+    { value: "sections",  label: "Sections" },
+    { value: "style",     label: "Style" },
+    { value: "score",     label: "Score" },
+    { value: "history",   label: "History" },
   ];
 
   return (
@@ -140,7 +152,6 @@ export default function RightPanel({
               ))}
             </TabsList>
           </Tabs>
-
           <button
             onClick={handlePrint}
             className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-semibold transition-colors"
@@ -151,24 +162,19 @@ export default function RightPanel({
         </div>
       </div>
 
-      {/* ── Content (fills remaining height) ── */}
+      {/* ── Content ── */}
       <div className="flex-1 overflow-hidden flex flex-col min-h-0">
 
-        {/* PREVIEW — always mounted, shown/hidden via CSS so ResizeObserver stays alive */}
+        {/* PREVIEW */}
         <div className={`flex-1 flex flex-col min-h-0 ${activeTab === "preview" ? "flex" : "hidden"}`}>
-          <ScaledPreview
-            data={data}
-            hiddenSections={hiddenSections}
-            accentColor={accentColor}
-            fontFamily={fontFamily}
-          />
+          <ScaledPreview data={data} hiddenSections={hiddenSections} accentColor={accentColor} fontFamily={fontFamily} />
         </div>
 
         {/* TEMPLATES */}
         {activeTab === "templates" && (
           <div className="flex-1 overflow-y-auto p-5 space-y-4">
             <h3 className="text-base font-semibold">Choose Template</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 gap-4">
               {templates.map(t => (
                 <button
                   key={t.id}
@@ -176,9 +182,53 @@ export default function RightPanel({
                   onClick={() => onChange({ template: t.id })}
                 >
                   <div className="aspect-[1/1.3] bg-muted rounded-md mb-3 flex items-center justify-center relative overflow-hidden">
-                    {t.id === "classic" && <div className="w-3/4 h-3/4 flex flex-col gap-2 opacity-50"><div className="w-full h-4 bg-slate-400 rounded-sm mb-2" /><div className="w-full h-2 bg-slate-300 rounded-sm" /><div className="w-full h-2 bg-slate-300 rounded-sm" /></div>}
-                    {t.id === "modern" && <div className="w-full h-full flex flex-col opacity-50"><div className="w-full h-1/4 rounded-sm mb-2" style={{ backgroundColor: accentColor }} /><div className="flex-1 px-4"><div className="w-full h-2 bg-slate-400 rounded-sm mb-2" /><div className="w-1/2 h-2 bg-slate-300 rounded-sm" /></div></div>}
-                    {t.id === "minimal" && <div className="w-3/4 h-3/4 flex flex-col gap-4 opacity-50 items-start pt-4"><div className="w-1/2 h-3 bg-slate-400 rounded-sm" /><div className="w-3/4 h-2 bg-slate-300 rounded-sm" /></div>}
+                    {/* Classic thumbnail */}
+                    {t.id === "classic" && (
+                      <div className="w-3/4 h-3/4 flex flex-col gap-2 opacity-60">
+                        <div className="text-center">
+                          <div className="w-1/2 h-3 bg-slate-500 rounded mx-auto mb-1" style={{ backgroundColor: accentColor }} />
+                          <div className="w-full h-px bg-slate-300 mb-2" style={{ backgroundColor: accentColor }} />
+                        </div>
+                        <div className="w-full h-2 bg-slate-300 rounded" />
+                        <div className="w-4/5 h-2 bg-slate-300 rounded" />
+                      </div>
+                    )}
+                    {/* Modern thumbnail */}
+                    {t.id === "modern" && (
+                      <div className="w-full h-full flex flex-col opacity-70">
+                        <div className="w-full h-1/4 mb-2" style={{ backgroundColor: accentColor }} />
+                        <div className="flex-1 px-4 space-y-1.5">
+                          <div className="w-full h-2 bg-slate-300 rounded" />
+                          <div className="w-1/2 h-2 bg-slate-300 rounded" />
+                        </div>
+                      </div>
+                    )}
+                    {/* Minimal thumbnail */}
+                    {t.id === "minimal" && (
+                      <div className="w-3/4 h-3/4 flex flex-col gap-3 opacity-60 pt-2">
+                        <div className="w-1/2 h-2.5 rounded" style={{ backgroundColor: accentColor }} />
+                        <div className="w-full h-1.5 bg-slate-300 rounded" />
+                        <div className="w-4/5 h-1.5 bg-slate-300 rounded" />
+                      </div>
+                    )}
+                    {/* Executive thumbnail */}
+                    {t.id === "executive" && (
+                      <div className="w-full h-full flex flex-col px-3 pt-3 gap-2 opacity-70">
+                        <div className="flex justify-between items-start">
+                          <div className="w-2/5 h-3 bg-slate-700 rounded" />
+                          <div className="w-1/3 space-y-1">
+                            <div className="h-1.5 bg-slate-300 rounded" />
+                            <div className="h-1.5 bg-slate-300 rounded" />
+                          </div>
+                        </div>
+                        <div className="w-full h-0.5 rounded" style={{ backgroundColor: accentColor }} />
+                        <div className="space-y-1">
+                          <div className="w-1/3 h-1.5 bg-slate-500 rounded" />
+                          <div className="w-full h-1.5 bg-slate-200 rounded" />
+                          <div className="w-4/5 h-1.5 bg-slate-200 rounded" />
+                        </div>
+                      </div>
+                    )}
                     {data.template === t.id && (
                       <div className="absolute top-2 right-2 bg-primary text-primary-foreground rounded-full p-0.5">
                         <CheckCircle2 className="w-4 h-4" />
@@ -219,27 +269,71 @@ export default function RightPanel({
 
         {/* STYLE */}
         {activeTab === "style" && (
-          <div className="flex-1 overflow-y-auto p-5 space-y-8 max-w-lg">
+          <div className="flex-1 overflow-y-auto p-5 space-y-8">
+
+            {/* Color palette */}
             <div className="space-y-4">
-              <h3 className="text-base font-semibold">Accent Color</h3>
-              <div className="flex flex-wrap gap-4">
+              <h3 className="text-base font-semibold flex items-center gap-2">
+                <Palette className="w-4 h-4 text-muted-foreground" />
+                Accent Color
+              </h3>
+
+              {/* Preset swatches */}
+              <div className="flex flex-wrap gap-2.5">
                 {colors.map(c => (
                   <button
                     key={c.value}
-                    className={`w-11 h-11 rounded-full flex items-center justify-center shadow-sm transition-transform hover:scale-110 ${accentColor === c.value ? "ring-2 ring-offset-2 ring-foreground scale-110" : ""}`}
+                    className={`w-9 h-9 rounded-full shadow-sm transition-all hover:scale-110 focus:outline-none ${accentColor === c.value ? "ring-2 ring-offset-2 ring-foreground scale-110" : ""}`}
                     style={{ backgroundColor: c.value }}
-                    onClick={() => setAccentColor(c.value)}
+                    onClick={() => { setAccentColor(c.value); setCustomColor(c.value); }}
                     title={c.name}
                   >
-                    {accentColor === c.value && <CheckCircle2 className="w-5 h-5 text-white" />}
+                    {accentColor === c.value && (
+                      <CheckCircle2 className="w-4 h-4 text-white mx-auto" />
+                    )}
                   </button>
                 ))}
               </div>
+
+              {/* Custom color picker */}
+              <div className="flex items-center gap-3 p-3 bg-muted/30 rounded-xl border">
+                <div className="relative shrink-0">
+                  <input
+                    type="color"
+                    value={customColor}
+                    onChange={e => { setCustomColor(e.target.value); setAccentColor(e.target.value); }}
+                    className="w-10 h-10 rounded-lg cursor-pointer border-0 p-0.5 bg-transparent"
+                    title="Custom color"
+                  />
+                </div>
+                <div className="flex-1">
+                  <Label className="text-xs text-muted-foreground mb-1 block">Custom Hex Color</Label>
+                  <input
+                    type="text"
+                    value={customColor}
+                    onChange={e => {
+                      const val = e.target.value;
+                      setCustomColor(val);
+                      if (/^#[0-9A-Fa-f]{6}$/.test(val)) setAccentColor(val);
+                    }}
+                    placeholder="#3b82f6"
+                    className="w-full h-8 px-2 text-sm font-mono border rounded-md bg-background focus:outline-none focus:ring-2 ring-primary"
+                    maxLength={7}
+                  />
+                </div>
+                <div
+                  className="w-10 h-10 rounded-lg border shadow-inner shrink-0"
+                  style={{ backgroundColor: accentColor }}
+                  title="Current color preview"
+                />
+              </div>
             </div>
+
+            {/* Font family */}
             <div className="space-y-3">
               <h3 className="text-base font-semibold">Font Family</h3>
               <Select value={fontFamily} onValueChange={setFontFamily}>
-                <SelectTrigger className="w-full sm:w-[280px]"><SelectValue /></SelectTrigger>
+                <SelectTrigger className="w-full sm:w-[300px]"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {fonts.map(f => (
                     <SelectItem key={f.value} value={f.value}>
@@ -248,6 +342,15 @@ export default function RightPanel({
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+
+            {/* Live color preview banner */}
+            <div className="rounded-xl overflow-hidden border shadow-sm">
+              <div className="h-10 w-full" style={{ backgroundColor: accentColor }} />
+              <div className="p-3 bg-background text-center">
+                <span className="text-sm font-semibold" style={{ color: accentColor }}>Preview · {accentColor}</span>
+                <p className="text-xs text-muted-foreground mt-0.5" style={{ fontFamily }}>This color and font will apply to your CV</p>
+              </div>
             </div>
           </div>
         )}
@@ -258,7 +361,11 @@ export default function RightPanel({
             <div className="text-center space-y-3">
               <h2 className="text-xl font-bold">AI Resume Score</h2>
               <p className="text-sm text-muted-foreground">Instant AI feedback on content, formatting, and impact.</p>
-              <Button onClick={() => scoreResume.mutate({ data: { resumeData: data } }, { onSuccess: setScoreData })} disabled={scoreResume.isPending} className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0">
+              <Button
+                onClick={() => scoreResume.mutate({ data: { resumeData: data } }, { onSuccess: setScoreData })}
+                disabled={scoreResume.isPending}
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white border-0"
+              >
                 {scoreResume.isPending ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Star className="w-4 h-4 mr-2" />}
                 {scoreData ? "Re-Score" : "Score My Resume"}
               </Button>
