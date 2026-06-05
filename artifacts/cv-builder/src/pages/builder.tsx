@@ -213,7 +213,7 @@ export default function Builder() {
   return (
     <>
       {/* ══════════ DESKTOP (md+) ══════════ */}
-      <div className="hidden md:flex h-screen w-full overflow-hidden bg-background select-none">
+      <div className="hidden md:flex h-screen w-full overflow-hidden bg-background select-none no-print">
 
         {/* Left nav sidebar */}
         <Sidebar
@@ -278,7 +278,7 @@ export default function Builder() {
       </div>
 
       {/* ══════════ MOBILE (< md) ══════════ */}
-      <div className="flex md:hidden flex-col h-screen w-full overflow-hidden bg-background">
+      <div className="flex md:hidden flex-col h-screen w-full overflow-hidden bg-background no-print">
 
         {/* Top bar */}
         <header className="h-13 border-b flex items-center justify-between px-3 shrink-0 bg-background/80 backdrop-blur z-20 no-print">
@@ -364,8 +364,8 @@ export default function Builder() {
         </div>
       </div>
 
-      {/* Print target */}
-      <div className="hidden print:block">
+      {/* Print target — only visible during window.print() */}
+      <div className="print-only">
         <PreviewPanel {...commonPanelProps} />
       </div>
     </>

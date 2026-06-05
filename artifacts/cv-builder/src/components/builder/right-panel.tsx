@@ -155,7 +155,7 @@ export default function RightPanel({
       <div className="flex-1 overflow-hidden flex flex-col min-h-0">
 
         {/* PREVIEW — always mounted, shown/hidden via CSS so ResizeObserver stays alive */}
-        <div className={`flex-1 flex flex-col min-h-0 ${activeTab === "preview" ? "flex" : "hidden"} print:flex`}>
+        <div className={`flex-1 flex flex-col min-h-0 ${activeTab === "preview" ? "flex" : "hidden"}`}>
           <ScaledPreview
             data={data}
             hiddenSections={hiddenSections}

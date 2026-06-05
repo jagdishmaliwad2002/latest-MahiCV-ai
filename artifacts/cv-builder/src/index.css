@@ -171,16 +171,33 @@
   z-index: -1;
 }
 
+/* ── Print-only helper (hidden on screen, shown only during print) ── */
+.print-only {
+  display: none;
+}
+
 /* ── Print / Export PDF ── */
 @media print {
-  body {
+  /* Hide absolutely everything first */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Then reveal only the CV print target */
+  .print-only {
+    display: block !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 9999 !important;
     background: white !important;
-    margin: 0;
-    padding: 0;
   }
-  .no-print {
-    display: none !important;
+
+  .print-only,
+  .print-only * {
+    visibility: visible !important;
   }
+
+  /* Clean up the CV page itself */
   .print-content {
     box-shadow: none !important;
     border: none !important;
